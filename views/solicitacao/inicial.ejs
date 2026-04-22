@@ -1,0 +1,22 @@
+﻿<div class="row page-titles mx-0">
+    <div class="col-sm-6 p-md-0"><div class="welcome-text"><h4><%= titulo %></h4></div></div>
+</div>
+<% if (bancoIndisponivel) { %><div class="alert alert-warning">Banco indisponivel no momento.</div><% } %>
+<% if (tabelaInexistente) { %><div class="alert alert-danger">Tabela <strong><%= nomeTabela %></strong> inexistente.</div><% } %>
+<div class="card"><div class="card-body"><div class="table-responsive">
+<table class="table table-striped">
+<thead><tr><th>#</th><th>Descricao</th><th>Localizacao</th><th>Volume estimado</th><th>Status</th></tr></thead>
+<tbody>
+<% if (solicitacoes.length === 0) { %><tr><td colspan="5" class="text-center">Nenhum registro.</td></tr><% } %>
+<% for (let index = 0; index < solicitacoes.length; index++) { %>
+<tr>
+<td><%= index + 1 %></td>
+<td><%= solicitacoes[index].descricao %></td>
+<td><%= solicitacoes[index].localizacao %></td>
+<td><%= solicitacoes[index].volumeEstimado %></td>
+<td><%= solicitacoes[index].status %></td>
+</tr>
+<% } %>
+</tbody>
+</table>
+</div></div></div>

@@ -1,0 +1,23 @@
+﻿<div class="row page-titles mx-0">
+    <div class="col-sm-6 p-md-0"><div class="welcome-text"><h4><%= titulo %></h4></div></div>
+</div>
+<% if (bancoIndisponivel) { %><div class="alert alert-warning">Banco indisponivel no momento.</div><% } %>
+<% if (tabelaInexistente) { %><div class="alert alert-danger">Tabela <strong><%= nomeTabela %></strong> inexistente.</div><% } %>
+<div class="card"><div class="card-body"><div class="table-responsive">
+<table class="table table-striped">
+<thead><tr><th>#</th><th>Nome</th><th>Email</th><th>Tipo</th><th>Perfil</th><th>Ativo</th></tr></thead>
+<tbody>
+<% if (usuarios.length === 0) { %><tr><td colspan="6" class="text-center">Nenhum registro.</td></tr><% } %>
+<% for (let index = 0; index < usuarios.length; index++) { %>
+<tr>
+<td><%= index + 1 %></td>
+<td><%= usuarios[index].nome %></td>
+<td><%= usuarios[index].email %></td>
+<td><%= usuarios[index].tipoPessoa %></td>
+<td><%= usuarios[index].perfil %></td>
+<td><%= usuarios[index].ativo ? 'Sim' : 'Nao' %></td>
+</tr>
+<% } %>
+</tbody>
+</table>
+</div></div></div>

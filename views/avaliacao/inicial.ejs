@@ -1,0 +1,21 @@
+﻿<div class="row page-titles mx-0">
+    <div class="col-sm-6 p-md-0"><div class="welcome-text"><h4><%= titulo %></h4></div></div>
+</div>
+<% if (bancoIndisponivel) { %><div class="alert alert-warning">Banco indisponivel no momento.</div><% } %>
+<% if (tabelaInexistente) { %><div class="alert alert-danger">Tabela <strong><%= nomeTabela %></strong> inexistente.</div><% } %>
+<div class="card"><div class="card-body"><div class="table-responsive">
+<table class="table table-striped">
+<thead><tr><th>#</th><th>Nota</th><th>Comentario</th><th>Data</th></tr></thead>
+<tbody>
+<% if (avaliacoes.length === 0) { %><tr><td colspan="4" class="text-center">Nenhum registro.</td></tr><% } %>
+<% for (let index = 0; index < avaliacoes.length; index++) { %>
+<tr>
+<td><%= index + 1 %></td>
+<td><%= avaliacoes[index].nota %></td>
+<td><%= avaliacoes[index].comentario ?? '-' %></td>
+<td><%= dateFormat(avaliacoes[index].dataAvaliacao) %></td>
+</tr>
+<% } %>
+</tbody>
+</table>
+</div></div></div>

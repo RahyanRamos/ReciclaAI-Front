@@ -1,0 +1,73 @@
+﻿<div class="row page-titles mx-0">
+    <div class="col-sm-6 p-md-0">
+        <div class="welcome-text">
+            <h4><%= titulo %></h4>
+            <p class="mb-0"><%= subtitulo %></p>
+        </div>
+    </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Inicial</a></li>
+            <li class="breadcrumb-item active"><a href="javascript:void(0)">Dashboard</a></li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-4 col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Horario atual</h5>
+                <p class="mb-0"><strong><%= horaAgora %></strong></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Modulos ativos</h5>
+                <p class="mb-0"><strong><%= resumoRotas.length %></strong> modulos administrativos.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Status da API</h5>
+                <p class="mb-0">Endpoint rapido: <code>/status</code></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Rotas de administracao</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Rota</th>
+                                <th>Descricao</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for (let index = 0; index < resumoRotas.length; index++) { %>
+                                <tr>
+                                    <td><%= index + 1 %></td>
+                                    <td><a href="<%= resumoRotas[index].rota %>"><%= resumoRotas[index].rota %></a></td>
+                                    <td><%= resumoRotas[index].descricao %></td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

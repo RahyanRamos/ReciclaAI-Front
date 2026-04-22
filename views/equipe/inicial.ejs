@@ -1,0 +1,22 @@
+﻿<div class="row page-titles mx-0">
+    <div class="col-sm-6 p-md-0"><div class="welcome-text"><h4><%= titulo %></h4></div></div>
+</div>
+<% if (bancoIndisponivel) { %><div class="alert alert-warning">Banco indisponivel no momento.</div><% } %>
+<% if (tabelaInexistente) { %><div class="alert alert-danger">Tabela <strong><%= nomeTabela %></strong> inexistente.</div><% } %>
+<div class="card"><div class="card-body"><div class="table-responsive">
+<table class="table table-striped">
+<thead><tr><th>#</th><th>Nome</th><th>Empresa</th><th>Ativo</th><th>Criado em</th></tr></thead>
+<tbody>
+<% if (equipes.length === 0) { %><tr><td colspan="5" class="text-center">Nenhum registro.</td></tr><% } %>
+<% for (let index = 0; index < equipes.length; index++) { %>
+<tr>
+<td><%= index + 1 %></td>
+<td><%= equipes[index].nome %></td>
+<td><%= equipes[index].empresaResponsavel %></td>
+<td><%= equipes[index].ativo ? 'Sim' : 'Nao' %></td>
+<td><%= dateFormat(equipes[index].criadoEm) %></td>
+</tr>
+<% } %>
+</tbody>
+</table>
+</div></div></div>

@@ -1,0 +1,23 @@
+﻿<div class="row page-titles mx-0">
+    <div class="col-sm-6 p-md-0"><div class="welcome-text"><h4><%= titulo %></h4></div></div>
+</div>
+<% if (bancoIndisponivel) { %><div class="alert alert-warning">Banco indisponivel no momento.</div><% } %>
+<% if (tabelaInexistente) { %><div class="alert alert-danger">Tabela <strong><%= nomeTabela %></strong> inexistente.</div><% } %>
+<div class="card"><div class="card-body"><div class="table-responsive">
+<table class="table table-striped">
+<thead><tr><th>#</th><th>Nome</th><th>Categoria</th><th>Unidade</th><th>Ativo</th><th>Criado em</th></tr></thead>
+<tbody>
+<% if (materiais.length === 0) { %><tr><td colspan="6" class="text-center">Nenhum registro.</td></tr><% } %>
+<% for (let index = 0; index < materiais.length; index++) { %>
+<tr>
+<td><%= index + 1 %></td>
+<td><%= materiais[index].nome %></td>
+<td><%= materiais[index].categoria %></td>
+<td><%= materiais[index].unidadeMedida %></td>
+<td><%= materiais[index].ativo ? 'Sim' : 'Nao' %></td>
+<td><%= dateFormat(materiais[index].criadoEm) %></td>
+</tr>
+<% } %>
+</tbody>
+</table>
+</div></div></div>
