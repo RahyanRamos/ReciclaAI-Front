@@ -56,3 +56,4 @@ pids
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 /quixlab-bootstrap-main
+/pw2-app-web-master
