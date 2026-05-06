@@ -3,13 +3,40 @@
         <nav class="navbar navbar-expand">
             <div class="collapse navbar-collapse justify-content-between">
                 <div class="header-left">
-                    <h5 class="mb-0">Programacao Web 2</h5>
+                    <div class="input-group icons reciclaai-search">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-transparent border-0 pr-2 pr-sm-3">
+                                <i class="mdi mdi-magnify"></i>
+                            </span>
+                        </div>
+                        <input type="search" class="form-control" placeholder="Buscar modulo" aria-label="Buscar modulo">
+                    </div>
                 </div>
 
                 <ul class="navbar-nav header-right">
+                    <li class="nav-item dropdown notification_dropdown">
+                        <a class="nav-link" href="#" role="button" data-toggle="dropdown">
+                            <i class="mdi mdi-bell-outline"></i>
+                            <span class="badge badge-primary badge-pill">6</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a href="/solicitacoes" class="dropdown-item">
+                                <i class="icon-envelope-open text-primary"></i>
+                                <span class="ml-2">Solicitacoes</span>
+                            </a>
+                            <a href="/coletas" class="dropdown-item">
+                                <i class="icon-reload text-success"></i>
+                                <span class="ml-2">Coletas</span>
+                            </a>
+                            <a href="/avaliacoes" class="dropdown-item">
+                                <i class="icon-star text-warning"></i>
+                                <span class="ml-2">Avaliacoes</span>
+                            </a>
+                        </div>
+                    </li>
                     <li class="nav-item dropdown header-profile">
                         <a class="nav-link" href="#" role="button" data-toggle="dropdown">
-                            <i class="mdi mdi-account"></i>
+                            <span class="reciclaai-user-avatar">RA</span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
                             <a href="/sobre" class="dropdown-item">
@@ -17,7 +44,7 @@
                                 <span class="ml-2">Sobre</span>
                             </a>
                             <a href="/login" class="dropdown-item">
-                                <i class="icon-key"></i>
+                                <i class="icon-login"></i>
                                 <span class="ml-2">Login</span>
                             </a>
                         </div>

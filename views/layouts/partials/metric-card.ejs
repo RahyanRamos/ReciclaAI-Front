@@ -1,0 +1,16 @@
+<div class="<%= typeof column !== 'undefined' && column ? column : 'col-xl-3 col-lg-6 col-sm-6' %>">
+    <div class="card">
+        <div class="stat-widget-two card-body">
+            <div class="stat-content">
+                <div class="stat-text"><%= label %></div>
+                <div class="stat-digit"><%= value %></div>
+            </div>
+            <div class="progress">
+                <div class="progress-bar <%= typeof progressClass !== 'undefined' && progressClass ? progressClass : 'bg-primary' %>" style="width: <%= typeof progress !== 'undefined' ? progress : 100 %>%"></div>
+            </div>
+            <% if (typeof hint !== 'undefined' && hint) { %>
+                <p class="mb-0 mt-3 text-muted"><%= hint %></p>
+            <% } %>
+        </div>
+    </div>
+</div>

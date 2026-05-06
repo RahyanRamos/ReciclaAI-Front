@@ -1,23 +1,81 @@
-﻿<div class="row page-titles mx-0">
-    <div class="col-sm-6 p-md-0"><div class="welcome-text"><h4><%= titulo %></h4></div></div>
+<%- include('../layouts/partials/page-title', {
+    title: titulo,
+    subtitle: 'Clientes, catadores e empresas cadastrados',
+    current: 'Usuarios'
+}) %>
+
+<%- include('../layouts/partials/database-alerts') %>
+
+<% const usuariosAtivos = usuarios.filter((usuario) => usuario.ativo).length; %>
+
+<div class="row">
+    <%- include('../layouts/partials/metric-card', {
+        label: 'Usuarios',
+        value: usuarios.length,
+        hint: 'Registros encontrados',
+        progress: usuarios.length ? 100 : 0,
+        progressClass: 'bg-primary'
+    }) %>
+    <%- include('../layouts/partials/metric-card', {
+        label: 'Ativos',
+        value: usuariosAtivos,
+        hint: 'Contas habilitadas',
+        progress: usuarios.length ? Math.round((usuariosAtivos / usuarios.length) * 100) : 0,
+        progressClass: 'bg-success'
+    }) %>
+    <%- include('../layouts/partials/metric-card', {
+        label: 'Inativos',
+        value: usuarios.length - usuariosAtivos,
+        hint: 'Contas bloqueadas',
+        progress: usuarios.length ? Math.round(((usuarios.length - usuariosAtivos) / usuarios.length) * 100) : 0,
+        progressClass: 'bg-danger'
+    }) %>
 </div>
-<% if (bancoIndisponivel) { %><div class="alert alert-warning">Banco indisponivel no momento.</div><% } %>
-<% if (tabelaInexistente) { %><div class="alert alert-danger">Tabela <strong><%= nomeTabela %></strong> inexistente.</div><% } %>
-<div class="card"><div class="card-body"><div class="table-responsive">
-<table class="table table-striped">
-<thead><tr><th>#</th><th>Nome</th><th>Email</th><th>Tipo</th><th>Perfil</th><th>Ativo</th></tr></thead>
-<tbody>
-<% if (usuarios.length === 0) { %><tr><td colspan="6" class="text-center">Nenhum registro.</td></tr><% } %>
-<% for (let index = 0; index < usuarios.length; index++) { %>
-<tr>
-<td><%= index + 1 %></td>
-<td><%= usuarios[index].nome %></td>
-<td><%= usuarios[index].email %></td>
-<td><%= usuarios[index].tipoPessoa %></td>
-<td><%= usuarios[index].perfil %></td>
-<td><%= usuarios[index].ativo ? 'Sim' : 'Nao' %></td>
-</tr>
-<% } %>
-</tbody>
-</table>
-</div></div></div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="card-title">Lista de usuarios</h4>
+        <div class="reciclaai-page-actions">
+            <a href="/usuarios" class="btn btn-primary">
+                <i class="icon-refresh mr-2"></i>Atualizar
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped reciclaai-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Tipo</th>
+                        <th>Perfil</th>
+                        <th>Ativo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (usuarios.length === 0) { %>
+                        <%- include('../layouts/partials/empty-table-row', { colspan: 6 }) %>
+                    <% } %>
+                    <% for (let index = 0; index < usuarios.length; index++) { %>
+                        <tr>
+                            <td><%= index + 1 %></td>
+                            <td><strong><%= usuarios[index].nome %></strong></td>
+                            <td><%= usuarios[index].email %></td>
+                            <td><span class="badge badge-light"><%= usuarios[index].tipoPessoa %></span></td>
+                            <td><span class="badge badge-info"><%= usuarios[index].perfil %></span></td>
+                            <td>
+                                <% if (usuarios[index].ativo) { %>
+                                    <span class="badge badge-success reciclaai-status">Sim</span>
+                                <% } else { %>
+                                    <span class="badge badge-danger reciclaai-status">Nao</span>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

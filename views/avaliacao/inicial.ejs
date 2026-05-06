@@ -1,21 +1,80 @@
-﻿<div class="row page-titles mx-0">
-    <div class="col-sm-6 p-md-0"><div class="welcome-text"><h4><%= titulo %></h4></div></div>
+<%- include('../layouts/partials/page-title', {
+    title: titulo,
+    subtitle: 'Feedback dos atendimentos realizados',
+    current: 'Avaliacoes'
+}) %>
+
+<%- include('../layouts/partials/database-alerts') %>
+
+<% const mediaAvaliacoes = avaliacoes.length ? (avaliacoes.reduce((total, avaliacao) => total + Number(avaliacao.nota || 0), 0) / avaliacoes.length).toFixed(1) : '0.0'; %>
+<% const avaliacoesBoas = avaliacoes.filter((avaliacao) => Number(avaliacao.nota) >= 4).length; %>
+
+<div class="row">
+    <%- include('../layouts/partials/metric-card', {
+        label: 'Avaliacoes',
+        value: avaliacoes.length,
+        hint: 'Feedbacks registrados',
+        progress: avaliacoes.length ? 100 : 0,
+        progressClass: 'bg-primary'
+    }) %>
+    <%- include('../layouts/partials/metric-card', {
+        label: 'Media',
+        value: mediaAvaliacoes,
+        hint: 'Nota media de atendimento',
+        progress: Math.round((Number(mediaAvaliacoes) / 5) * 100),
+        progressClass: 'bg-warning'
+    }) %>
+    <%- include('../layouts/partials/metric-card', {
+        label: 'Notas 4+',
+        value: avaliacoesBoas,
+        hint: 'Atendimentos bem avaliados',
+        progress: avaliacoes.length ? Math.round((avaliacoesBoas / avaliacoes.length) * 100) : 0,
+        progressClass: 'bg-success'
+    }) %>
 </div>
-<% if (bancoIndisponivel) { %><div class="alert alert-warning">Banco indisponivel no momento.</div><% } %>
-<% if (tabelaInexistente) { %><div class="alert alert-danger">Tabela <strong><%= nomeTabela %></strong> inexistente.</div><% } %>
-<div class="card"><div class="card-body"><div class="table-responsive">
-<table class="table table-striped">
-<thead><tr><th>#</th><th>Nota</th><th>Comentario</th><th>Data</th></tr></thead>
-<tbody>
-<% if (avaliacoes.length === 0) { %><tr><td colspan="4" class="text-center">Nenhum registro.</td></tr><% } %>
-<% for (let index = 0; index < avaliacoes.length; index++) { %>
-<tr>
-<td><%= index + 1 %></td>
-<td><%= avaliacoes[index].nota %></td>
-<td><%= avaliacoes[index].comentario ?? '-' %></td>
-<td><%= dateFormat(avaliacoes[index].dataAvaliacao) %></td>
-</tr>
-<% } %>
-</tbody>
-</table>
-</div></div></div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="card-title">Avaliacoes de coletas</h4>
+        <div class="reciclaai-page-actions">
+            <a href="/avaliacoes" class="btn btn-primary">
+                <i class="icon-refresh mr-2"></i>Atualizar
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped reciclaai-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nota</th>
+                        <th>Comentario</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (avaliacoes.length === 0) { %>
+                        <%- include('../layouts/partials/empty-table-row', { colspan: 4 }) %>
+                    <% } %>
+                    <% for (let index = 0; index < avaliacoes.length; index++) { %>
+                        <tr>
+                            <td><%= index + 1 %></td>
+                            <td>
+                                <% if (Number(avaliacoes[index].nota) >= 4) { %>
+                                    <span class="badge badge-success reciclaai-status"><%= avaliacoes[index].nota %>/5</span>
+                                <% } else if (Number(avaliacoes[index].nota) >= 3) { %>
+                                    <span class="badge badge-warning reciclaai-status"><%= avaliacoes[index].nota %>/5</span>
+                                <% } else { %>
+                                    <span class="badge badge-danger reciclaai-status"><%= avaliacoes[index].nota %>/5</span>
+                                <% } %>
+                            </td>
+                            <td><%= avaliacoes[index].comentario ?? '-' %></td>
+                            <td><%= dateFormat(avaliacoes[index].dataAvaliacao) %></td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

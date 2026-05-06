@@ -1,22 +1,85 @@
-﻿<div class="row page-titles mx-0">
-    <div class="col-sm-6 p-md-0"><div class="welcome-text"><h4><%= titulo %></h4></div></div>
+<%- include('../layouts/partials/page-title', {
+    title: titulo,
+    subtitle: 'Execucao e acompanhamento das retiradas',
+    current: 'Coletas'
+}) %>
+
+<%- include('../layouts/partials/database-alerts') %>
+
+<% const coletasConcluidas = coletas.filter((coleta) => coleta.status === 'CONCLUIDA').length; %>
+<% const pesoTotal = coletas.reduce((total, coleta) => total + Number(coleta.pesoTotal || 0), 0); %>
+
+<div class="row">
+    <%- include('../layouts/partials/metric-card', {
+        label: 'Coletas',
+        value: coletas.length,
+        hint: 'Execucoes registradas',
+        progress: coletas.length ? 100 : 0,
+        progressClass: 'bg-primary'
+    }) %>
+    <%- include('../layouts/partials/metric-card', {
+        label: 'Concluidas',
+        value: coletasConcluidas,
+        hint: 'Finalizadas pela operacao',
+        progress: coletas.length ? Math.round((coletasConcluidas / coletas.length) * 100) : 0,
+        progressClass: 'bg-success'
+    }) %>
+    <%- include('../layouts/partials/metric-card', {
+        label: 'Peso total',
+        value: `${pesoTotal.toFixed(2)} kg`,
+        hint: 'Material coletado',
+        progress: pesoTotal ? 100 : 0,
+        progressClass: 'bg-info'
+    }) %>
 </div>
-<% if (bancoIndisponivel) { %><div class="alert alert-warning">Banco indisponivel no momento.</div><% } %>
-<% if (tabelaInexistente) { %><div class="alert alert-danger">Tabela <strong><%= nomeTabela %></strong> inexistente.</div><% } %>
-<div class="card"><div class="card-body"><div class="table-responsive">
-<table class="table table-striped">
-<thead><tr><th>#</th><th>Data</th><th>Peso total</th><th>Status</th><th>Observacao</th></tr></thead>
-<tbody>
-<% if (coletas.length === 0) { %><tr><td colspan="5" class="text-center">Nenhum registro.</td></tr><% } %>
-<% for (let index = 0; index < coletas.length; index++) { %>
-<tr>
-<td><%= index + 1 %></td>
-<td><%= dateFormat(coletas[index].dataColeta) %></td>
-<td><%= coletas[index].pesoTotal %> kg</td>
-<td><%= coletas[index].status %></td>
-<td><%= coletas[index].observacao ?? '-' %></td>
-</tr>
-<% } %>
-</tbody>
-</table>
-</div></div></div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="card-title">Coletas realizadas</h4>
+        <div class="reciclaai-page-actions">
+            <a href="/coletas" class="btn btn-primary">
+                <i class="icon-refresh mr-2"></i>Atualizar
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped reciclaai-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Data</th>
+                        <th>Peso total</th>
+                        <th>Status</th>
+                        <th>Observacao</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (coletas.length === 0) { %>
+                        <%- include('../layouts/partials/empty-table-row', { colspan: 5 }) %>
+                    <% } %>
+                    <% for (let index = 0; index < coletas.length; index++) { %>
+                        <% const status = coletas[index].status; %>
+                        <tr>
+                            <td><%= index + 1 %></td>
+                            <td><strong><%= dateFormat(coletas[index].dataColeta) %></strong></td>
+                            <td><%= coletas[index].pesoTotal %> kg</td>
+                            <td>
+                                <% if (status === 'CONCLUIDA') { %>
+                                    <span class="badge badge-success reciclaai-status"><%= status %></span>
+                                <% } else if (status === 'CANCELADA') { %>
+                                    <span class="badge badge-danger reciclaai-status"><%= status %></span>
+                                <% } else if (status === 'EM_ROTA') { %>
+                                    <span class="badge badge-info reciclaai-status"><%= status %></span>
+                                <% } else { %>
+                                    <span class="badge badge-warning reciclaai-status"><%= status %></span>
+                                <% } %>
+                            </td>
+                            <td><%= coletas[index].observacao ?? '-' %></td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,17 @@
+<% if (typeof bancoIndisponivel !== 'undefined' && bancoIndisponivel) { %>
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Banco indisponivel.</strong> Nao foi possivel consultar os registros neste momento.
+        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+<% } %>
+
+<% if (typeof tabelaInexistente !== 'undefined' && tabelaInexistente) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Tabela ausente.</strong> A tabela <code><%= nomeTabela %></code> ainda nao existe no banco.
+        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+<% } %>
