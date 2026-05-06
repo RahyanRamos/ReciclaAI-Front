@@ -36,8 +36,8 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <h4 class="card-title">Equipes de coleta</h4>
         <div class="reciclaai-page-actions">
-            <a href="/equipes" class="btn btn-primary">
-                <i class="icon-refresh mr-2"></i>Atualizar
+            <a href="/equipes/criar" class="btn btn-primary">
+                <i class="icon-plus mr-2"></i>Nova
             </a>
         </div>
     </div>
@@ -51,11 +51,12 @@
                         <th>Empresa</th>
                         <th>Ativo</th>
                         <th>Criado em</th>
+                        <th>Acoes</th>
                     </tr>
                 </thead>
                 <tbody>
                     <% if (equipes.length === 0) { %>
-                        <%- include('../layouts/partials/empty-table-row', { colspan: 5 }) %>
+                        <%- include('../layouts/partials/empty-table-row', { colspan: 6 }) %>
                     <% } %>
                     <% for (let index = 0; index < equipes.length; index++) { %>
                         <tr>
@@ -70,6 +71,17 @@
                                 <% } %>
                             </td>
                             <td><%= dateFormat(equipes[index].criadoEm) %></td>
+                            <td>
+                                <a href="/equipes/<%= equipes[index].id %>/editar" class="text-warning mr-2" title="Editar">
+                                    <i class="fa fa-pencil fa-lg"></i>
+                                </a>
+                                <a href="/equipes/<%= equipes[index].id %>/excluir" class="text-danger mr-2" title="Excluir">
+                                    <i class="fa fa-trash fa-lg"></i>
+                                </a>
+                                <a href="#" class="text-secondary remover" data-resource="equipes" data-label="equipe" data-name="<%= equipes[index].nome %>" data-id="<%= equipes[index].id %>" title="Excluir rapido">
+                                    <i class="fa fa-times fa-lg"></i>
+                                </a>
+                            </td>
                         </tr>
                     <% } %>
                 </tbody>

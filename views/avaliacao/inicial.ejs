@@ -37,8 +37,8 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <h4 class="card-title">Avaliacoes de coletas</h4>
         <div class="reciclaai-page-actions">
-            <a href="/avaliacoes" class="btn btn-primary">
-                <i class="icon-refresh mr-2"></i>Atualizar
+            <a href="/avaliacoes/criar" class="btn btn-primary">
+                <i class="icon-plus mr-2"></i>Nova
             </a>
         </div>
     </div>
@@ -51,11 +51,12 @@
                         <th>Nota</th>
                         <th>Comentario</th>
                         <th>Data</th>
+                        <th>Acoes</th>
                     </tr>
                 </thead>
                 <tbody>
                     <% if (avaliacoes.length === 0) { %>
-                        <%- include('../layouts/partials/empty-table-row', { colspan: 4 }) %>
+                        <%- include('../layouts/partials/empty-table-row', { colspan: 5 }) %>
                     <% } %>
                     <% for (let index = 0; index < avaliacoes.length; index++) { %>
                         <tr>
@@ -71,6 +72,17 @@
                             </td>
                             <td><%= avaliacoes[index].comentario ?? '-' %></td>
                             <td><%= dateFormat(avaliacoes[index].dataAvaliacao) %></td>
+                            <td>
+                                <a href="/avaliacoes/<%= avaliacoes[index].id %>/editar" class="text-warning mr-2" title="Editar">
+                                    <i class="fa fa-pencil fa-lg"></i>
+                                </a>
+                                <a href="/avaliacoes/<%= avaliacoes[index].id %>/excluir" class="text-danger mr-2" title="Excluir">
+                                    <i class="fa fa-trash fa-lg"></i>
+                                </a>
+                                <a href="#" class="text-secondary remover" data-resource="avaliacoes" data-label="avaliacao" data-name="Avaliacao #<%= avaliacoes[index].id %>" data-id="<%= avaliacoes[index].id %>" title="Excluir rapido">
+                                    <i class="fa fa-times fa-lg"></i>
+                                </a>
+                            </td>
                         </tr>
                     <% } %>
                 </tbody>

@@ -1,0 +1,36 @@
+<% const equipe = locals.equipe || {}; %>
+
+<%- include('../layouts/partials/page-title', {
+    title: titulo,
+    subtitle: subtitulo,
+    current: equipe.id ? 'Editar equipe' : 'Nova equipe'
+}) %>
+
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title"><%= equipe.id ? 'Editar equipe' : 'Cadastrar equipe' %></h4>
+    </div>
+    <div class="card-body">
+        <form action="/equipes/<%= equipe.id ? equipe.id + '/editar' : 'criar' %>" method="POST">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="nome">Nome</label>
+                    <input type="text" class="form-control" id="nome" name="nome" value="<%= equipe.nome || '' %>" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="empresaResponsavel">Empresa responsavel</label>
+                    <input type="text" class="form-control" id="empresaResponsavel" name="empresaResponsavel" value="<%= equipe.empresaResponsavel || '' %>" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="ativo">Ativo</label>
+                <select class="form-control" id="ativo" name="ativo">
+                    <option value="true" <%= equipe.ativo !== false ? 'selected' : '' %>>Sim</option>
+                    <option value="false" <%= equipe.ativo === false ? 'selected' : '' %>>Nao</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary mr-2">Salvar</button>
+            <a href="/equipes" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>

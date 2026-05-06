@@ -1,0 +1,33 @@
+<% const avaliacao = locals.avaliacao || {}; %>
+
+<%- include('../layouts/partials/page-title', {
+    title: titulo,
+    subtitle: subtitulo,
+    current: avaliacao.id ? 'Editar avaliacao' : 'Nova avaliacao'
+}) %>
+
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title"><%= avaliacao.id ? 'Editar avaliacao' : 'Cadastrar avaliacao' %></h4>
+    </div>
+    <div class="card-body">
+        <form action="/avaliacoes/<%= avaliacao.id ? avaliacao.id + '/editar' : 'criar' %>" method="POST">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="nota">Nota</label>
+                    <input type="number" min="1" max="5" class="form-control" id="nota" name="nota" value="<%= avaliacao.nota || 5 %>" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="dataAvaliacao">Data</label>
+                    <input type="date" class="form-control" id="dataAvaliacao" name="dataAvaliacao" value="<%= avaliacao.dataAvaliacao || '' %>" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="comentario">Comentario</label>
+                <textarea class="form-control" id="comentario" name="comentario" rows="4"><%= avaliacao.comentario || '' %></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary mr-2">Salvar</button>
+            <a href="/avaliacoes" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>

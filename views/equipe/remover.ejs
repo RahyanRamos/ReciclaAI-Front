@@ -1,0 +1,29 @@
+<%- include('../layouts/partials/page-title', {
+    title: titulo,
+    subtitle: subtitulo,
+    current: 'Excluir equipe'
+}) %>
+
+<div class="row">
+    <div class="col-lg-8 offset-lg-2">
+        <div class="card border-danger">
+            <div class="card-header bg-danger">
+                <h4 class="card-title text-white mb-0">Confirmar exclusao</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">Esta acao excluira o registro de forma permanente.</div>
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr><th>Nome</th><td><%= equipe.nome %></td></tr>
+                        <tr><th>Empresa</th><td><%= equipe.empresaResponsavel %></td></tr>
+                        <tr><th>Ativo</th><td><%= equipe.ativo ? 'Sim' : 'Nao' %></td></tr>
+                    </tbody>
+                </table>
+                <form action="/equipes/<%= equipe.id %>/excluir" method="POST">
+                    <button type="submit" class="btn btn-danger mr-2">Confirmar exclusao</button>
+                    <a href="/equipes" class="btn btn-secondary">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

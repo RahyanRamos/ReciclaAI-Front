@@ -1,0 +1,41 @@
+<% const coleta = locals.coleta || {}; %>
+
+<%- include('../layouts/partials/page-title', {
+    title: titulo,
+    subtitle: subtitulo,
+    current: coleta.id ? 'Editar coleta' : 'Nova coleta'
+}) %>
+
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title"><%= coleta.id ? 'Editar coleta' : 'Cadastrar coleta' %></h4>
+    </div>
+    <div class="card-body">
+        <form action="/coletas/<%= coleta.id ? coleta.id + '/editar' : 'criar' %>" method="POST">
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="dataColeta">Data</label>
+                    <input type="date" class="form-control" id="dataColeta" name="dataColeta" value="<%= coleta.dataColeta || '' %>" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="pesoTotal">Peso total</label>
+                    <input type="number" step="0.01" min="0" class="form-control" id="pesoTotal" name="pesoTotal" value="<%= coleta.pesoTotal || 0 %>" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="status">Status</label>
+                    <select class="form-control" id="status" name="status">
+                        <% for (let index = 0; index < statusColeta.length; index++) { %>
+                            <option value="<%= statusColeta[index] %>" <%= coleta.status === statusColeta[index] ? 'selected' : '' %>><%= statusColeta[index] %></option>
+                        <% } %>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="observacao">Observacao</label>
+                <textarea class="form-control" id="observacao" name="observacao" rows="4"><%= coleta.observacao || '' %></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary mr-2">Salvar</button>
+            <a href="/coletas" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>

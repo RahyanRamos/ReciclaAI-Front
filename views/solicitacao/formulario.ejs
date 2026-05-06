@@ -1,0 +1,41 @@
+<% const solicitacao = locals.solicitacao || {}; %>
+
+<%- include('../layouts/partials/page-title', {
+    title: titulo,
+    subtitle: subtitulo,
+    current: solicitacao.id ? 'Editar solicitacao' : 'Nova solicitacao'
+}) %>
+
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title"><%= solicitacao.id ? 'Editar solicitacao' : 'Cadastrar solicitacao' %></h4>
+    </div>
+    <div class="card-body">
+        <form action="/solicitacoes/<%= solicitacao.id ? solicitacao.id + '/editar' : 'criar' %>" method="POST">
+            <div class="form-group">
+                <label for="descricao">Descricao</label>
+                <input type="text" class="form-control" id="descricao" name="descricao" value="<%= solicitacao.descricao || '' %>" required>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="localizacao">Localizacao</label>
+                    <input type="text" class="form-control" id="localizacao" name="localizacao" value="<%= solicitacao.localizacao || '' %>" required>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="volumeEstimado">Volume estimado</label>
+                    <input type="number" step="0.01" min="0" class="form-control" id="volumeEstimado" name="volumeEstimado" value="<%= solicitacao.volumeEstimado || 0 %>" required>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="status">Status</label>
+                    <select class="form-control" id="status" name="status">
+                        <% for (let index = 0; index < statusSolicitacao.length; index++) { %>
+                            <option value="<%= statusSolicitacao[index] %>" <%= solicitacao.status === statusSolicitacao[index] ? 'selected' : '' %>><%= statusSolicitacao[index] %></option>
+                        <% } %>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mr-2">Salvar</button>
+            <a href="/solicitacoes" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>

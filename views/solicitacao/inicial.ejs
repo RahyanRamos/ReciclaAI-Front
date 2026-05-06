@@ -37,8 +37,8 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <h4 class="card-title">Solicitacoes de coleta</h4>
         <div class="reciclaai-page-actions">
-            <a href="/solicitacoes" class="btn btn-primary">
-                <i class="icon-refresh mr-2"></i>Atualizar
+            <a href="/solicitacoes/criar" class="btn btn-primary">
+                <i class="icon-plus mr-2"></i>Nova
             </a>
         </div>
     </div>
@@ -52,11 +52,12 @@
                         <th>Localizacao</th>
                         <th>Volume estimado</th>
                         <th>Status</th>
+                        <th>Acoes</th>
                     </tr>
                 </thead>
                 <tbody>
                     <% if (solicitacoes.length === 0) { %>
-                        <%- include('../layouts/partials/empty-table-row', { colspan: 5 }) %>
+                        <%- include('../layouts/partials/empty-table-row', { colspan: 6 }) %>
                     <% } %>
                     <% for (let index = 0; index < solicitacoes.length; index++) { %>
                         <% const status = solicitacoes[index].status; %>
@@ -75,6 +76,17 @@
                                 <% } else { %>
                                     <span class="badge badge-warning reciclaai-status"><%= status %></span>
                                 <% } %>
+                            </td>
+                            <td>
+                                <a href="/solicitacoes/<%= solicitacoes[index].id %>/editar" class="text-warning mr-2" title="Editar">
+                                    <i class="fa fa-pencil fa-lg"></i>
+                                </a>
+                                <a href="/solicitacoes/<%= solicitacoes[index].id %>/excluir" class="text-danger mr-2" title="Excluir">
+                                    <i class="fa fa-trash fa-lg"></i>
+                                </a>
+                                <a href="#" class="text-secondary remover" data-resource="solicitacoes" data-label="solicitacao" data-name="<%= solicitacoes[index].descricao %>" data-id="<%= solicitacoes[index].id %>" title="Excluir rapido">
+                                    <i class="fa fa-times fa-lg"></i>
+                                </a>
                             </td>
                         </tr>
                     <% } %>
