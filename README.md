@@ -1,6 +1,17 @@
 ﻿# ReciclaAI - Front (Base Programacao Web 2)
 
-Sistema base em NestJS para administracao de reciclagens, seguindo a arquitetura tecnica do projeto exemplo com EJS + layout global e TypeORM + MySQL.
+# Integrantes:
+
+Rafael Angelo Darold
+Rahyan Ramos de Oliveira
+
+# ReciclaAI — Sistema de Gerenciamento de Coleta de Recicláveis
+
+O ReciclaAI é uma aplicação web desenvolvida como projeto acadêmico da disciplina de Programação Web 2. O sistema tem como objetivo centralizar e organizar todo o fluxo de coleta de materiais recicláveis, conectando quem solicita a coleta — pessoas físicas ou jurídicas — com os responsáveis por realizá-la, sejam catadores autônomos ou empresas especializadas.
+
+# Objetivo da Aplicação
+
+A plataforma busca digitalizar e tornar mais eficiente o processo de reciclagem urbana, eliminando a informalidade na comunicação entre geradores de resíduos e coletores. Por meio do sistema, um usuário pode registrar uma solicitação de coleta informando os materiais disponíveis, e um catador ou empresa pode aceitar essa solicitação e realizar a coleta. Após a conclusão, o processo pode ser avaliado, gerando um histórico de qualidade do serviço prestado.
 
 ## Pre-requisitos
 
@@ -85,6 +96,7 @@ Aplicacao: `http://localhost:3000`
 Erro: `EADDRINUSE`
 
 Solucao:
+
 - Alterar `PORT` no `.env`
 - Encerrar processo que ocupa a porta
 
@@ -93,6 +105,7 @@ Solucao:
 Erro: `npm is not recognized`
 
 Solucao:
+
 - Reinstalar Node.js com PATH
 - Reabrir terminal
 - Conferir com `node -v` e `npm -v`
@@ -102,6 +115,7 @@ Solucao:
 Erro em alguma tela de modulo: tabela nao encontrada (`ER_NO_SUCH_TABLE`)
 
 Solucao:
+
 - Criar schema e tabelas do modulo correspondente (ex.: `coletas`, `materiais`)
 - Em ambiente local, usar `DB_SYNCHRONIZE=true` temporariamente para gerar tabelas
 - Voltar para `DB_SYNCHRONIZE=false` depois da criacao
