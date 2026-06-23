@@ -1,6 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { DATABASE_SOURCE } from '../../config/constants/database-source';
+import { ColetaMaterial } from '../coleta/coleta-material.entity';
+import { Coleta, StatusColeta } from '../coleta/coleta.entity';
+import { SolicitacaoMaterial } from './solicitacao-material.entity';
 import { Solicitacao, StatusSolicitacao } from './solicitacao.entity';
 
 type ResultadoListaSolicitacoes = {
@@ -16,8 +24,9 @@ type MysqlError = {
 type SolicitacaoFormData = {
   descricao?: string;
   localizacao?: string;
-  volumeEstimado?: string | number;
   status?: StatusSolicitacao;
+  materialId?: string | string[];
+  quantidadeEstimada?: string | string[];
 };
 
 const toDecimal = (value: string | number | undefined): number => {
@@ -27,6 +36,16 @@ const toDecimal = (value: string | number | undefined): number => {
 
   return Number(String(value ?? '0').replace(',', '.')) || 0;
 };
+
+const toArray = (value: string | string[] | undefined): string[] => {
+  if (value === undefined) {
+    return [];
+  }
+
+  return Array.isArray(value) ? value : [value];
+};
+
+const RELATIONS = ['materiais', 'materiais.material'];
 
 @Injectable()
 export class SolicitacaoService {
@@ -42,9 +61,23 @@ export class SolicitacaoService {
     return {
       descricao: dados.descricao?.trim() ?? '',
       localizacao: dados.localizacao?.trim() ?? '',
-      volumeEstimado: toDecimal(dados.volumeEstimado),
       status: dados.status ?? StatusSolicitacao.ABERTA,
     };
+  }
+
+  private parseMateriais(dados: SolicitacaoFormData): SolicitacaoMaterial[] {
+    const materialIds = toArray(dados.materialId);
+    const quantidades = toArray(dados.quantidadeEstimada);
+
+    return materialIds
+      .map((materialId, index) => ({
+        material: { id: Number(materialId) },
+        quantidadeEstimada: toDecimal(quantidades[index]),
+      }))
+      .filter((item) => item.material.id && item.quantidadeEstimada > 0)
+      .map((item) =>
+        this.dataSource.getRepository(SolicitacaoMaterial).create(item),
+      );
   }
 
   async listar(): Promise<ResultadoListaSolicitacoes> {
@@ -59,6 +92,7 @@ export class SolicitacaoService {
     try {
       const registros = await this.repository().find({
         order: { id: 'ASC' },
+        relations: RELATIONS,
       });
 
       return {
@@ -86,11 +120,14 @@ export class SolicitacaoService {
       return null;
     }
 
-    return this.repository().findOne({ where: { id } });
+    return this.repository().findOne({ where: { id }, relations: RELATIONS });
   }
 
   async create(dados: SolicitacaoFormData): Promise<Solicitacao> {
-    const solicitacao = this.repository().create(this.toEntityData(dados));
+    const solicitacao = this.repository().create({
+      ...this.toEntityData(dados),
+      materiais: this.parseMateriais(dados),
+    });
 
     return this.repository().save(solicitacao);
   }
@@ -105,7 +142,12 @@ export class SolicitacaoService {
       return null;
     }
 
+    await this.dataSource
+      .getRepository(SolicitacaoMaterial)
+      .delete({ solicitacao: { id } });
+
     Object.assign(solicitacao, this.toEntityData(dados));
+    solicitacao.materiais = this.parseMateriais(dados);
 
     return this.repository().save(solicitacao);
   }
@@ -118,5 +160,38 @@ export class SolicitacaoService {
     }
 
     return this.repository().remove(solicitacao);
+  }
+
+  async aceitar(id: number): Promise<Coleta> {
+    const solicitacao = await this.findOne(id);
+
+    if (!solicitacao) {
+      throw new NotFoundException('Solicitacao nao encontrada');
+    }
+
+    if (solicitacao.status !== StatusSolicitacao.ABERTA) {
+      throw new BadRequestException('Solicitacao nao pode mais ser aceita');
+    }
+
+    const coletaRepository = this.dataSource.getRepository(Coleta);
+
+    const coleta = coletaRepository.create({
+      dataColeta: new Date().toISOString().slice(0, 10),
+      status: StatusColeta.PENDENTE,
+      solicitacao,
+      materiais: solicitacao.materiais.map((item) =>
+        this.dataSource.getRepository(ColetaMaterial).create({
+          material: item.material,
+          quantidadeEstimada: item.quantidadeEstimada,
+        }),
+      ),
+    });
+
+    const coletaSalva = await coletaRepository.save(coleta);
+
+    solicitacao.status = StatusSolicitacao.AGENDADA;
+    await this.repository().save(solicitacao);
+
+    return coletaSalva;
   }
 }

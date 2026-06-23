@@ -30,7 +30,6 @@ CREATE TABLE IF NOT EXISTS solicitacoes_coleta (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   descricao VARCHAR(200) NOT NULL,
   localizacao VARCHAR(150) NOT NULL,
-  volumeEstimado DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   status ENUM('ABERTA', 'AGENDADA', 'CONCLUIDA', 'CANCELADA') NOT NULL DEFAULT 'ABERTA',
   criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   atualizado_em DATETIME NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -39,11 +38,30 @@ CREATE TABLE IF NOT EXISTS solicitacoes_coleta (
 CREATE TABLE IF NOT EXISTS coletas (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   dataColeta DATE NOT NULL,
-  pesoTotal DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   status ENUM('PENDENTE', 'EM_ROTA', 'CONCLUIDA', 'CANCELADA') NOT NULL DEFAULT 'PENDENTE',
   observacao TEXT NULL,
+  solicitacao_id INT UNSIGNED NULL,
   criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  atualizado_em DATETIME NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  atualizado_em DATETIME NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_coletas_solicitacao FOREIGN KEY (solicitacao_id) REFERENCES solicitacoes_coleta (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS solicitacao_materiais (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  solicitacao_id INT UNSIGNED NOT NULL,
+  material_id INT UNSIGNED NOT NULL,
+  quantidadeEstimada DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  CONSTRAINT fk_solicitacao_materiais_solicitacao FOREIGN KEY (solicitacao_id) REFERENCES solicitacoes_coleta (id) ON DELETE CASCADE,
+  CONSTRAINT fk_solicitacao_materiais_material FOREIGN KEY (material_id) REFERENCES materiais (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS coleta_materiais (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  coleta_id INT UNSIGNED NOT NULL,
+  material_id INT UNSIGNED NOT NULL,
+  quantidadeEstimada DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  CONSTRAINT fk_coleta_materiais_coleta FOREIGN KEY (coleta_id) REFERENCES coletas (id) ON DELETE CASCADE,
+  CONSTRAINT fk_coleta_materiais_material FOREIGN KEY (material_id) REFERENCES materiais (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS equipes (
@@ -81,20 +99,39 @@ INSERT INTO materiais (nome, categoria, unidadeMedida, ativo, criado_em, atualiz
 ('Eletronicos pequenos', 'Eletronico', 'un', 1, NOW(), NOW());
 
 -- SOLICITACOES DE COLETA
-INSERT INTO solicitacoes_coleta (descricao, localizacao, volumeEstimado, status, criado_em, atualizado_em) VALUES
-('Coleta residencial de papel e plastico', 'Rua das Flores, 120 - Ji-Parana', 12.50, 'ABERTA', NOW(), NOW()),
-('Material reciclavel de escritorio', 'Av. Marechal, 980 - Ji-Parana', 35.00, 'AGENDADA', NOW(), NOW()),
-('Coleta mensal condominio bloco A', 'Rua Amazonas, 450 - Ji-Parana', 48.75, 'CONCLUIDA', NOW(), NOW()),
-('Retirada de latas e vidros', 'Rua T-15, 210 - Ji-Parana', 22.00, 'CANCELADA', NOW(), NOW()),
-('Descarte de caixas de papelao', 'Av. Brasil, 3300 - Ji-Parana', 18.30, 'ABERTA', NOW(), NOW());
+INSERT INTO solicitacoes_coleta (descricao, localizacao, status, criado_em, atualizado_em) VALUES
+('Coleta residencial de papel e plastico', 'Rua das Flores, 120 - Ji-Parana', 'ABERTA', NOW(), NOW()),
+('Material reciclavel de escritorio', 'Av. Marechal, 980 - Ji-Parana', 'AGENDADA', NOW(), NOW()),
+('Coleta mensal condominio bloco A', 'Rua Amazonas, 450 - Ji-Parana', 'CONCLUIDA', NOW(), NOW()),
+('Retirada de latas e vidros', 'Rua T-15, 210 - Ji-Parana', 'CANCELADA', NOW(), NOW()),
+('Descarte de caixas de papelao', 'Av. Brasil, 3300 - Ji-Parana', 'ABERTA', NOW(), NOW());
+
+-- MATERIAIS DA SOLICITACAO
+INSERT INTO solicitacao_materiais (solicitacao_id, material_id, quantidadeEstimada) VALUES
+(1, 1, 7.50),
+(1, 2, 5.00),
+(2, 1, 35.00),
+(3, 3, 20.00),
+(3, 4, 28.75),
+(4, 3, 10.00),
+(4, 4, 12.00),
+(5, 1, 18.30);
 
 -- COLETAS
-INSERT INTO coletas (dataColeta, pesoTotal, status, observacao, criado_em, atualizado_em) VALUES
-('2026-04-15', 14.20, 'CONCLUIDA', 'Coleta finalizada sem ocorrencias', NOW(), NOW()),
-('2026-04-16', 9.80, 'CONCLUIDA', 'Volume abaixo do estimado', NOW(), NOW()),
-('2026-04-17', 0.00, 'CANCELADA', 'Cliente nao estava no local', NOW(), NOW()),
-('2026-04-19', 27.40, 'EM_ROTA', 'Equipe em deslocamento', NOW(), NOW()),
-('2026-04-21', 0.00, 'PENDENTE', 'Aguardando confirmacao da equipe', NOW(), NOW());
+INSERT INTO coletas (dataColeta, status, observacao, solicitacao_id, criado_em, atualizado_em) VALUES
+('2026-04-15', 'CONCLUIDA', 'Coleta finalizada sem ocorrencias', 3, NOW(), NOW()),
+('2026-04-16', 'CONCLUIDA', 'Volume abaixo do estimado', NULL, NOW(), NOW()),
+('2026-04-17', 'CANCELADA', 'Cliente nao estava no local', 4, NOW(), NOW()),
+('2026-04-19', 'EM_ROTA', 'Equipe em deslocamento', 2, NOW(), NOW()),
+('2026-04-21', 'PENDENTE', 'Aguardando confirmacao da equipe', NULL, NOW(), NOW());
+
+-- MATERIAIS DA COLETA
+INSERT INTO coleta_materiais (coleta_id, material_id, quantidadeEstimada) VALUES
+(1, 3, 20.00),
+(1, 4, 28.75),
+(3, 3, 10.00),
+(3, 4, 12.00),
+(4, 1, 35.00);
 
 -- EQUIPES
 INSERT INTO equipes (nome, empresaResponsavel, ativo, criado_em, atualizado_em) VALUES

@@ -31,22 +31,6 @@ export class ColetaController {
     };
   }
 
-  @Get('criar')
-  @Render('coleta/formulario')
-  formularioCriar(): object {
-    return {
-      titulo: 'Nova coleta',
-      subtitulo: 'Registre uma coleta realizada ou planejada',
-      statusColeta: Object.values(StatusColeta),
-    };
-  }
-
-  @Post('criar')
-  @Redirect('/coletas')
-  async formularioCriarSalvar(@Body() dados: object): Promise<void> {
-    await this.coletaService.create(dados);
-  }
-
   @Get(':id/editar')
   @Render('coleta/formulario')
   async formularioEditar(

@@ -2,9 +2,14 @@
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Solicitacao } from '../solicitacao/solicitacao.entity';
+import { ColetaMaterial } from './coleta-material.entity';
 
 export enum StatusColeta {
   PENDENTE = 'PENDENTE',
@@ -21,18 +26,6 @@ export class Coleta {
   @Column({ type: 'date' })
   dataColeta!: string;
 
-  @Column({
-    type: 'decimal',
-    precision: 10,
-    scale: 2,
-    transformer: {
-      to: (value: number): number => value,
-      from: (value: string): number => Number(value),
-    },
-    default: 0,
-  })
-  pesoTotal!: number;
-
   @Column({ type: 'enum', enum: StatusColeta, default: StatusColeta.PENDENTE })
   status!: StatusColeta;
 
@@ -44,4 +37,18 @@ export class Coleta {
 
   @UpdateDateColumn({ name: 'atualizado_em', nullable: true })
   atualizadoEm!: Date;
+
+  @ManyToOne(() => Solicitacao, { nullable: true })
+  @JoinColumn({ name: 'solicitacao_id' })
+  solicitacao?: Solicitacao;
+
+  @OneToMany(() => ColetaMaterial, (item) => item.coleta, { cascade: true })
+  materiais!: ColetaMaterial[];
+
+  get pesoTotalEstimado(): number {
+    return (this.materiais ?? []).reduce(
+      (total, item) => total + Number(item.quantidadeEstimada),
+      0,
+    );
+  }
 }

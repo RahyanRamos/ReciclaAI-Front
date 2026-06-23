@@ -15,9 +15,10 @@ type MysqlError = {
 
 type ColetaFormData = {
   dataColeta?: string;
-  pesoTotal?: string | number;
   status?: StatusColeta;
   observacao?: string;
+  coletaMaterialId?: string | string[];
+  quantidadeEstimada?: string | string[];
 };
 
 const toDecimal = (value: string | number | undefined): number => {
@@ -27,6 +28,16 @@ const toDecimal = (value: string | number | undefined): number => {
 
   return Number(String(value ?? '0').replace(',', '.')) || 0;
 };
+
+const toArray = (value: string | string[] | undefined): string[] => {
+  if (value === undefined) {
+    return [];
+  }
+
+  return Array.isArray(value) ? value : [value];
+};
+
+const RELATIONS = ['materiais', 'materiais.material', 'solicitacao'];
 
 @Injectable()
 export class ColetaService {
@@ -41,7 +52,6 @@ export class ColetaService {
   private toEntityData(dados: ColetaFormData): Partial<Coleta> {
     return {
       dataColeta: dados.dataColeta ?? new Date().toISOString().slice(0, 10),
-      pesoTotal: toDecimal(dados.pesoTotal),
       status: dados.status ?? StatusColeta.PENDENTE,
       observacao: dados.observacao?.trim() || undefined,
     };
@@ -59,6 +69,7 @@ export class ColetaService {
     try {
       const registros = await this.repository().find({
         order: { id: 'ASC' },
+        relations: RELATIONS,
       });
 
       return {
@@ -86,13 +97,7 @@ export class ColetaService {
       return null;
     }
 
-    return this.repository().findOne({ where: { id } });
-  }
-
-  async create(dados: ColetaFormData): Promise<Coleta> {
-    const coleta = this.repository().create(this.toEntityData(dados));
-
-    return this.repository().save(coleta);
+    return this.repository().findOne({ where: { id }, relations: RELATIONS });
   }
 
   async update(id: number, dados: ColetaFormData): Promise<Coleta | null> {
@@ -103,6 +108,20 @@ export class ColetaService {
     }
 
     Object.assign(coleta, this.toEntityData(dados));
+
+    const ids = toArray(dados.coletaMaterialId);
+    const quantidades = toArray(dados.quantidadeEstimada);
+    const novasQuantidades = new Map(
+      ids.map((itemId, index) => [Number(itemId), toDecimal(quantidades[index])]),
+    );
+
+    coleta.materiais.forEach((item) => {
+      const novaQuantidade = novasQuantidades.get(item.id);
+
+      if (novaQuantidade !== undefined) {
+        item.quantidadeEstimada = novaQuantidade;
+      }
+    });
 
     return this.repository().save(coleta);
   }

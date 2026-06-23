@@ -1,0 +1,61 @@
+<%- include('../layouts/partials/page-title', {
+    title: titulo,
+    subtitle: subtitulo,
+    current: 'Aceitar solicitacao'
+}) %>
+
+<div class="row">
+    <div class="col-lg-8 offset-lg-2">
+        <div class="card border-success">
+            <div class="card-header bg-success">
+                <h4 class="card-title text-white mb-0">Confirmar aceite</h4>
+            </div>
+            <div class="card-body">
+                <% if (!podeAceitar) { %>
+                    <div class="alert alert-warning">Esta solicitacao esta com status <strong><%= solicitacao.status %></strong> e nao pode mais ser aceita.</div>
+                <% } else { %>
+                    <div class="alert alert-info">Ao confirmar, esta solicitacao sera atendida e uma nova coleta sera gerada com os materiais abaixo.</div>
+                <% } %>
+
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr><th>Descricao</th><td><%= solicitacao.descricao %></td></tr>
+                        <tr><th>Localizacao</th><td><%= solicitacao.localizacao %></td></tr>
+                        <tr><th>Status</th><td><%= solicitacao.status %></td></tr>
+                    </tbody>
+                </table>
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Material</th>
+                            <th>Quantidade estimada</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for (let index = 0; index < solicitacao.materiais.length; index++) { %>
+                            <% const item = solicitacao.materiais[index]; %>
+                            <tr>
+                                <td><%= item.material.nome %></td>
+                                <td><%= Number(item.quantidadeEstimada).toFixed(2) %> <%= item.material.unidadeMedida %></td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>Total</th>
+                            <th><%= solicitacao.volumeEstimadoTotal.toFixed(2) %></th>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <form action="/solicitacoes/<%= solicitacao.id %>/aceitar" method="POST">
+                    <% if (podeAceitar) { %>
+                        <button type="submit" class="btn btn-success mr-2">Confirmar aceite</button>
+                    <% } %>
+                    <a href="/solicitacoes" class="btn btn-secondary">Voltar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

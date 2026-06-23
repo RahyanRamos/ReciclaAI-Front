@@ -1,4 +1,5 @@
 <% const solicitacao = locals.solicitacao || {}; %>
+<% const materiaisSolicitacao = solicitacao.materiais || []; %>
 
 <%- include('../layouts/partials/page-title', {
     title: titulo,
@@ -17,15 +18,11 @@
                 <input type="text" class="form-control" id="descricao" name="descricao" value="<%= solicitacao.descricao || '' %>" required>
             </div>
             <div class="form-row">
-                <div class="form-group col-md-6">
+                <div class="form-group col-md-8">
                     <label for="localizacao">Localizacao</label>
                     <input type="text" class="form-control" id="localizacao" name="localizacao" value="<%= solicitacao.localizacao || '' %>" required>
                 </div>
-                <div class="form-group col-md-3">
-                    <label for="volumeEstimado">Volume estimado</label>
-                    <input type="number" step="0.01" min="0" class="form-control" id="volumeEstimado" name="volumeEstimado" value="<%= solicitacao.volumeEstimado || 0 %>" required>
-                </div>
-                <div class="form-group col-md-3">
+                <div class="form-group col-md-4">
                     <label for="status">Status</label>
                     <select class="form-control" id="status" name="status">
                         <% for (let index = 0; index < statusSolicitacao.length; index++) { %>
@@ -34,8 +31,96 @@
                     </select>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary mr-2">Salvar</button>
-            <a href="/solicitacoes" class="btn btn-secondary">Cancelar</a>
+
+            <hr>
+
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="mb-0">Materiais</h5>
+                <button type="button" class="btn btn-sm btn-outline-primary" id="btn-adicionar-material">
+                    <i class="icon-plus mr-1"></i>Adicionar material
+                </button>
+            </div>
+            <div id="lista-materiais"></div>
+
+            <button type="submit" class="btn btn-primary mr-2 mt-3">Salvar</button>
+            <a href="/solicitacoes" class="btn btn-secondary mt-3">Cancelar</a>
         </form>
     </div>
 </div>
+
+<script>
+    (function () {
+        var materiaisDisponiveis = <%- JSON.stringify(materiaisDisponiveis || []).replace(/</g, '\\u003c') %>;
+        var materiaisAtuais = <%- JSON.stringify(materiaisSolicitacao.map(function (item) {
+            return { materialId: item.material.id, quantidadeEstimada: item.quantidadeEstimada };
+        })).replace(/</g, '\\u003c') %>;
+        var lista = document.getElementById('lista-materiais');
+
+        function criarLinha(valores) {
+            valores = valores || {};
+            var linha = document.createElement('div');
+            linha.className = 'form-row align-items-end material-linha mb-2';
+
+            var colMaterial = document.createElement('div');
+            colMaterial.className = 'form-group col-md-6';
+            var selectMaterial = document.createElement('select');
+            selectMaterial.className = 'form-control';
+            selectMaterial.name = 'materialId[]';
+            selectMaterial.required = true;
+
+            materiaisDisponiveis.forEach(function (material) {
+                var option = document.createElement('option');
+                option.value = material.id;
+                option.text = material.nome + ' (' + material.unidadeMedida + ')';
+                if (valores.materialId && Number(valores.materialId) === material.id) {
+                    option.selected = true;
+                }
+                selectMaterial.appendChild(option);
+            });
+
+            colMaterial.appendChild(selectMaterial);
+
+            var colQuantidade = document.createElement('div');
+            colQuantidade.className = 'form-group col-md-4';
+            var inputQuantidade = document.createElement('input');
+            inputQuantidade.type = 'number';
+            inputQuantidade.step = '0.01';
+            inputQuantidade.min = '0.01';
+            inputQuantidade.className = 'form-control';
+            inputQuantidade.name = 'quantidadeEstimada[]';
+            inputQuantidade.placeholder = 'Quantidade estimada';
+            inputQuantidade.required = true;
+            inputQuantidade.value = valores.quantidadeEstimada || '';
+            colQuantidade.appendChild(inputQuantidade);
+
+            var colRemover = document.createElement('div');
+            colRemover.className = 'form-group col-md-2';
+            var btnRemover = document.createElement('button');
+            btnRemover.type = 'button';
+            btnRemover.className = 'btn btn-outline-danger btn-block';
+            btnRemover.innerHTML = '<i class="fa fa-trash"></i>';
+            btnRemover.addEventListener('click', function () {
+                linha.remove();
+            });
+            colRemover.appendChild(btnRemover);
+
+            linha.appendChild(colMaterial);
+            linha.appendChild(colQuantidade);
+            linha.appendChild(colRemover);
+
+            return linha;
+        }
+
+        document.getElementById('btn-adicionar-material').addEventListener('click', function () {
+            lista.appendChild(criarLinha());
+        });
+
+        if (materiaisAtuais.length > 0) {
+            materiaisAtuais.forEach(function (item) {
+                lista.appendChild(criarLinha(item));
+            });
+        } else {
+            lista.appendChild(criarLinha());
+        }
+    })();
+</script>

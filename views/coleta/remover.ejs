@@ -15,7 +15,7 @@
                 <table class="table table-bordered">
                     <tbody>
                         <tr><th>Data</th><td><%= dateFormat(coleta.dataColeta) %></td></tr>
-                        <tr><th>Peso</th><td><%= coleta.pesoTotal %> kg</td></tr>
+                        <tr><th>Peso</th><td><%= coleta.pesoTotalEstimado.toFixed(2) %></td></tr>
                         <tr><th>Status</th><td><%= coleta.status %></td></tr>
                     </tbody>
                 </table>

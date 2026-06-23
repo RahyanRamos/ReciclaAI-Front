@@ -10,12 +10,16 @@ import {
   Redirect,
   Render,
 } from '@nestjs/common';
+import { MaterialService } from '../material/material.service';
 import { SolicitacaoService } from './solicitacao.service';
 import { StatusSolicitacao } from './solicitacao.entity';
 
 @Controller('solicitacoes')
 export class SolicitacaoController {
-  constructor(private readonly solicitacaoService: SolicitacaoService) {}
+  constructor(
+    private readonly solicitacaoService: SolicitacaoService,
+    private readonly materialService: MaterialService,
+  ) {}
 
   @Get()
   @Render('solicitacao/inicial')
@@ -33,11 +37,14 @@ export class SolicitacaoController {
 
   @Get('criar')
   @Render('solicitacao/formulario')
-  formularioCriar(): object {
+  async formularioCriar(): Promise<object> {
+    const materiais = await this.materialService.listar();
+
     return {
       titulo: 'Nova solicitacao',
       subtitulo: 'Registre um pedido de coleta',
       statusSolicitacao: Object.values(StatusSolicitacao),
+      materiaisDisponiveis: materiais.registros.filter((item) => item.ativo),
     };
   }
 
@@ -58,11 +65,14 @@ export class SolicitacaoController {
       throw new NotFoundException('Solicitacao nao encontrada');
     }
 
+    const materiais = await this.materialService.listar();
+
     return {
       titulo: 'Edicao de solicitacao',
       subtitulo: `Atualizacao da solicitacao: ${solicitacao.descricao}`,
       solicitacao,
       statusSolicitacao: Object.values(StatusSolicitacao),
+      materiaisDisponiveis: materiais.registros.filter((item) => item.ativo),
     };
   }
 
@@ -73,6 +83,35 @@ export class SolicitacaoController {
     @Body() dados: object,
   ): Promise<void> {
     await this.solicitacaoService.update(id, dados);
+  }
+
+  @Get(':id/aceitar')
+  @Render('solicitacao/aceitar')
+  async formularioAceitar(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<object> {
+    const solicitacao = await this.solicitacaoService.findOne(id);
+
+    if (!solicitacao) {
+      throw new NotFoundException('Solicitacao nao encontrada');
+    }
+
+    return {
+      titulo: 'Aceitar solicitacao',
+      subtitulo: `Confirmar aceite da solicitacao: ${solicitacao.descricao}`,
+      solicitacao,
+      podeAceitar: solicitacao.status === StatusSolicitacao.ABERTA,
+    };
+  }
+
+  @Post(':id/aceitar')
+  @Redirect()
+  async aceitarSalvar(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<{ url: string }> {
+    const coleta = await this.solicitacaoService.aceitar(id);
+
+    return { url: `/coletas/${coleta.id}/editar` };
   }
 
   @Get(':id/excluir')

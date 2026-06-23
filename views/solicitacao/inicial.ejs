@@ -65,7 +65,7 @@
                             <td><%= index + 1 %></td>
                             <td><strong><%= solicitacoes[index].descricao %></strong></td>
                             <td><%= solicitacoes[index].localizacao %></td>
-                            <td><%= solicitacoes[index].volumeEstimado %></td>
+                            <td><%= solicitacoes[index].volumeEstimadoTotal.toFixed(2) %></td>
                             <td>
                                 <% if (status === 'CONCLUIDA') { %>
                                     <span class="badge badge-success reciclaai-status"><%= status %></span>
@@ -78,6 +78,11 @@
                                 <% } %>
                             </td>
                             <td>
+                                <% if (status === 'ABERTA') { %>
+                                    <a href="/solicitacoes/<%= solicitacoes[index].id %>/aceitar" class="text-success mr-2" title="Aceitar">
+                                        <i class="fa fa-check fa-lg"></i>
+                                    </a>
+                                <% } %>
                                 <a href="/solicitacoes/<%= solicitacoes[index].id %>/editar" class="text-warning mr-2" title="Editar">
                                     <i class="fa fa-pencil fa-lg"></i>
                                 </a>

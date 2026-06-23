@@ -7,7 +7,7 @@
 <%- include('../layouts/partials/database-alerts') %>
 
 <% const coletasConcluidas = coletas.filter((coleta) => coleta.status === 'CONCLUIDA').length; %>
-<% const pesoTotal = coletas.reduce((total, coleta) => total + Number(coleta.pesoTotal || 0), 0); %>
+<% const pesoTotal = coletas.reduce((total, coleta) => total + coleta.pesoTotalEstimado, 0); %>
 
 <div class="row">
     <%- include('../layouts/partials/metric-card', {
@@ -36,11 +36,6 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h4 class="card-title">Coletas realizadas</h4>
-        <div class="reciclaai-page-actions">
-            <a href="/coletas/criar" class="btn btn-primary">
-                <i class="icon-plus mr-2"></i>Nova
-            </a>
-        </div>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -64,7 +59,7 @@
                         <tr>
                             <td><%= index + 1 %></td>
                             <td><strong><%= dateFormat(coletas[index].dataColeta) %></strong></td>
-                            <td><%= coletas[index].pesoTotal %> kg</td>
+                            <td><%= coletas[index].pesoTotalEstimado.toFixed(2) %></td>
                             <td>
                                 <% if (status === 'CONCLUIDA') { %>
                                     <span class="badge badge-success reciclaai-status"><%= status %></span>

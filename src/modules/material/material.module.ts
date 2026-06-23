@@ -7,5 +7,6 @@ import { MaterialService } from './material.service';
   imports: [DatabaseModule],
   controllers: [MaterialController],
   providers: [MaterialService],
+  exports: [MaterialService],
 })
 export class MaterialModule {}

@@ -2,9 +2,11 @@
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { SolicitacaoMaterial } from './solicitacao-material.entity';
 
 export enum StatusSolicitacao {
   ABERTA = 'ABERTA',
@@ -24,9 +26,6 @@ export class Solicitacao {
   @Column({ type: 'varchar', length: 150 })
   localizacao!: string;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
-  volumeEstimado!: number;
-
   @Column({
     type: 'enum',
     enum: StatusSolicitacao,
@@ -39,4 +38,16 @@ export class Solicitacao {
 
   @UpdateDateColumn({ name: 'atualizado_em', nullable: true })
   atualizadoEm!: Date;
+
+  @OneToMany(() => SolicitacaoMaterial, (item) => item.solicitacao, {
+    cascade: true,
+  })
+  materiais!: SolicitacaoMaterial[];
+
+  get volumeEstimadoTotal(): number {
+    return (this.materiais ?? []).reduce(
+      (total, item) => total + Number(item.quantidadeEstimada),
+      0,
+    );
+  }
 }
